@@ -1,0 +1,5 @@
+Create 'CREATE FOREIGN TABLE' statements with ease and types.
+
+Call csv2fdw with -h for help.
+
+Requires python.

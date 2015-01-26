@@ -194,7 +194,7 @@ columns_clause = ",\n".join(columns_fragments)
 
 # generate our options clause
 options = ("filename '{}', format '{}', delimiter '{}', header 'true'"
-           .format(args.file, args.format, args.delimiter))
+           .format(args.file, args.format, delimiter))
 
 if args.null:
     options += ", null '{}'".format(args.null)

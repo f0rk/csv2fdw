@@ -50,6 +50,15 @@ if not args.file or not os.path.exists(args.file):
     sys.stderr.write("file '{}' does not exist.\n".format(args.file))
     sys.exit(1)
 
+# identifier quoting function
+def quote_ident(name):
+    name = name.replace('"', '""')
+    return '"' + name + '"'
+
+# escape helper
+def escape(val):
+    return val.replace("'", "''")
+
 # name cleaner function
 empties = ""
 def clean_name(name):
@@ -186,29 +195,31 @@ for record in reader:
 # generate our name clause
 name_clause = ""
 if args.schema:
-    name_clause += '"{}".'.format(args.schema)
-name_clause += '"{}"'.format(table_name)
+    name_clause += quote_ident(args.schema) + "."
+name_clause += quote_ident(table_name)
 
 # generate our columns clause
 columns_fragments = []
 for column_name, column_type in columns:
-    columns_fragments.append('    "{}" {}'.format(column_name, column_type))
+    columns_fragments.append("    {} {}".format(quote_ident(column_name),
+                                                column_type))
 columns_clause = ",\n".join(columns_fragments)
 
 # generate our options clause
 options = ("filename '{}', format '{}', delimiter '{}', header 'true'"
-           .format(args.file, args.format, delimiter))
+           .format(escape(args.file), escape(args.format), escape(delimiter)))
 
 if args.null:
-    options += ", null '{}'".format(args.null)
+    options += ", null '{}'".format(escape(args.null))
 
 # maybe print out a drop
 if args.drop:
-    print('drop foreign table if exists {};'.format(name_clause))
+    print("drop foreign table if exists {};".format(name_clause))
 
 # print out our table create statement
-print('create foreign table {} ('.format(name_clause))
+print("create foreign table {} (".format(name_clause))
 print(columns_clause)
 print(")")
-print('server "{}"'.format(args.server))
-print('options ({});'.format(options))
+print("server {}".format(quote_ident(args.server)))
+print("options ({});".format(options))
+
